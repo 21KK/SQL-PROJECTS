@@ -1,9 +1,9 @@
 -- Initially I have created a database 'kirandb1' which will be used for this sales analysis project
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- ---------------------------------- Feature Engineering Product Analysis -----------------------------------------
+
  -- 1. Add new column 'time of the day' to give insight of sales in the morning, noon and evening. This answers which part of the day has most sales
- USE kirandb1;
- select `Time` from sales;
+ USE kirandb1; 
 
 SELECT Time, (CASE 
 		WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
@@ -11,17 +11,13 @@ SELECT Time, (CASE
                     ELSE "EVENING"
                     END) AS time_of_the_day
 FROM sales;
-
 ALTER TABLE sales ADD COLUMN time_of_the_day varchar(15);
-
 UPDATE sales
 SET time_of_the_day = (CASE 
 			WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
                     WHEN Time BETWEEN "12:00:00" AND "16:00:00" THEN "AFTERNOON"
                     ELSE "EVENING"
-                    END
-);
-
+                    END);
 SELECT * FROM sales;
 
 -- 2. Add day name, which contains extracted days of the weeks.
@@ -56,6 +52,7 @@ SELECT DISTINCT count(Branch) FROM sales;
 SELECT DISTINCT City, Branch FROM sales;
 
 -- --------------------------------------------------------------- Product Questions -----------------------------------------------------------------
+
 -- 3. How many unique product lines are there? 
 SELECT count(DISTINCT(Product_line)) FROM sales;
 
@@ -96,21 +93,21 @@ SELECT product_line AS product, sum(vat) FROM sales
 GROUP BY product
 ORDER BY sum(vat) DESC;
 
--- -------- 11. Fetch each product and add a column to those products showing 'good', 'bad'. Good if its greater than avg sales.
+-- 11. Fetch each product and add a column to those products showing 'good', 'bad'. Good if its greater than avg sales.
 SELECT product_line,
-					CASE WHEN total > (SELECT avg(total) FROM sales) THEN 'GOOD'
-                    ELSE 'BAD' END AS csat
+		CASE WHEN total > (SELECT avg(total) FROM sales) THEN 'GOOD'
+                ELSE 'BAD' END AS csat
 FROM sales;
--- This above query works, now let's update the fact table
--- mysql is not allowing to use the same table to update ny referencing by itself. 
--- so alternative is to store the csat values in temp table and update fact table by referencing temp table
+-- ---------------- This above query works, now let's update the fact table.
+-- ---------------- MySQL is not allowing to use the same table to update ny referencing by itself. 
+-- ---------------- So, alternative is to store the csat(Customer Satisfaction) values in temp table and update fact table by referencing temp table.
 
 CREATE TEMPORARY TABLE REVIEW AS 
 SELECT avg(total) AS csat FROM sales;
 UPDATE sales
-		SET csat = CASE WHEN total > (SELECT csat FROM review) THEN 'GOOD' 
+	SET csat = CASE WHEN total > (SELECT csat FROM review) THEN 'GOOD' 
 								ELSE 'BAD' END;
--- Check if the column has been updated in fact table
+-- --------------Check if the column has been updated in fact table
 SELECT * FROM sales;
 
 -- 12. Which Branch sold more products than average product sold?
@@ -127,7 +124,7 @@ ORDER BY gen_count DESC;
 SELECT product_line, round(avg(rating),2) AS Avg_Rating FROM sales
 GROUP BY product_line;
 
--- ----------------------- Sales exploration -------------------------------------
+-- -------------------------------------------------------------------------- Sales exploration ---------------------------------------------------------------------------------------------------
 -- 15. Number of sales made in each time of the day per week per weekday?
 SELECT day_name, time_of_the_day, count(total) FROM sales
 GROUP BY day_name
@@ -148,7 +145,7 @@ SELECT customer_type, avg(vat) FROM sales
 GROUP BY customer_type
 ORDER BY avg(vat);
 
--- ----------------------- Exploring Customers -----------------------------------------
+-- ------------------------------------------------------------------------------------------- Exploring Customers ----------------------------------------------------------------------------------------------------------
 -- 19. How many unique customer types does the data have?
 SELECT DISTINCT customer_type FROM sales;
 
