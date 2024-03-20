@@ -1,4 +1,4 @@
--- Initiall I have created a database 'kirandb1' which will be used for this sales analysis project
+-- Initially I have created a database 'kirandb1' which will be used for this sales analysis project
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- ---------------------------------- Feature Engineering Product Analysis -----------------------------------------
  -- 1. Add new column 'time of the day' to give insight of sales in the morning, noon and evening. This answers which part of the day has most sales
@@ -6,17 +6,17 @@
  select `Time` from sales;
 
 SELECT Time, (CASE 
-					WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
+		WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
                     WHEN Time BETWEEN "12:00:00" AND "16:00:00" THEN "AFTERNOON"
                     ELSE "EVENING"
                     END) AS time_of_the_day
 FROM sales;
 
-ALTER TABLE	sales ADD COLUMN time_of_the_day varchar(15);
+ALTER TABLE sales ADD COLUMN time_of_the_day varchar(15);
 
 UPDATE sales
 SET time_of_the_day = (CASE 
-					WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
+			WHEN Time BETWEEN "00:00:00" AND "12:00:00" THEN "Morning"
                     WHEN Time BETWEEN "12:00:00" AND "16:00:00" THEN "AFTERNOON"
                     ELSE "EVENING"
                     END
